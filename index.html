@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mario Snake 🍄</title>
+  <title>Pãozinho Bros</title>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -101,7 +101,7 @@
 </head>
 <body>
 
-<div id="title">🍄 MARIO SNAKE 🍄</div>
+<div id="title">🍞 PÃOZINHO BROS 🍞</div>
 
 <div id="game-area">
   <div id="hud">
@@ -112,12 +112,12 @@
   <div id="canvas-wrap">
     <canvas id="c" width="480" height="480"></canvas>
     <div id="overlay">
-      <div id="ov-title">MARIO SNAKE</div>
+      <div id="ov-title">PÃOZINHO BROS</div>
       <div id="ov-info">
         Coma itens para crescer!<br>
         Atravesse as bordas — mas não bata em si mesmo!<br><br>
-        🪙 Moeda = 10 pts &nbsp;|&nbsp; 🍄 Cogumelo = 20 pts<br>
-        ⭐ Estrela = 30 pts
+        🪙 Moeda = 10 pts &nbsp;|&nbsp; 🍞 Pão = 20 pts<br>
+        ⭐ Estrela = 50 pts
       </div>
       <button id="ov-btn">▶ JOGAR!</button>
     </div>
@@ -132,6 +132,9 @@
 // ── Constants ──────────────────────────────────────────────────────────────
 const COLS = 20, ROWS = 20, CELL = 24;
 const W = COLS * CELL, H = ROWS * CELL;
+
+const imgMario = new Image(); imgMario.src = 'mario.png';
+const imgStar  = new Image(); imgStar.src  = 'star.png';
 
 const canvas = document.getElementById('c');
 const ctx    = canvas.getContext('2d');
@@ -205,7 +208,7 @@ function tick() {
 }
 
 function eatFood() {
-  const pts = foodKind === 'star' ? 30 : foodKind === 'mushroom' ? 20 : 10;
+  const pts = foodKind === 'star' ? 50 : foodKind === 'bread' ? 20 : 10;
   score += pts;
   if (score > hiScore) {
     hiScore = score;
@@ -279,7 +282,7 @@ function spawnFood() {
   } while (snake.some(s => s.x === p.x && s.y === p.y));
   food = p;
   const r = Math.random();
-  foodKind = r < 0.55 ? 'coin' : r < 0.82 ? 'mushroom' : 'star';
+  foodKind = r < 0.55 ? 'coin' : r < 0.82 ? 'bread' : 'star';
 }
 
 function updateHUD() {
@@ -374,32 +377,14 @@ function drawBrick(x, y) {
 
 function drawHead(seg) {
   const x = seg.x * CELL, y = seg.y * CELL, S = CELL;
-  // Hat
-  ctx.fillStyle = '#E52521';
-  ctx.fillRect(x + 2,  y + 1,             S - 4,      S * 0.42 | 0);
-  ctx.fillRect(x - 1,  y + (S * 0.31 | 0), S + 2,    S * 0.12 | 0);
-  // Face
-  ctx.fillStyle = '#FDB97D';
-  ctx.fillRect(x + 3,  y + (S * 0.41 | 0), S - 6,    S * 0.40 | 0);
-  // Ears
-  ctx.fillRect(x + 1,  y + (S * 0.44 | 0), 3,         S * 0.18 | 0);
-  ctx.fillRect(x + S - 4, y + (S * 0.44 | 0), 3,      S * 0.18 | 0);
-  // Eye whites
-  ctx.fillStyle = 'white';
-  ctx.fillRect(x + (S * 0.27 | 0), y + (S * 0.45 | 0), 5, 5);
-  ctx.fillRect(x + (S * 0.56 | 0), y + (S * 0.45 | 0), 5, 5);
-  // Pupils
-  ctx.fillStyle = '#000';
-  ctx.fillRect(x + (S * 0.30 | 0), y + (S * 0.47 | 0), 3, 3);
-  ctx.fillRect(x + (S * 0.59 | 0), y + (S * 0.47 | 0), 3, 3);
-  // Nose
-  ctx.fillStyle = '#D05040';
-  ctx.fillRect(x + (S * 0.41 | 0), y + (S * 0.54 | 0), S * 0.18 | 0, 4);
-  // Mustache
-  ctx.fillStyle = '#4A2800';
-  ctx.fillRect(x + (S * 0.14 | 0), y + (S * 0.64 | 0), S * 0.33 | 0, 3);
-  ctx.fillRect(x + (S * 0.53 | 0), y + (S * 0.64 | 0), S * 0.33 | 0, 3);
-  ctx.fillRect(x + (S * 0.25 | 0), y + (S * 0.68 | 0), S * 0.50 | 0, 3);
+  if (imgMario.complete && imgMario.naturalWidth > 0) {
+    ctx.drawImage(imgMario, x, y, S, S);
+  } else {
+    ctx.fillStyle = '#E52521';
+    ctx.fillRect(x + 2, y + 1, S - 4, S * 0.42 | 0);
+    ctx.fillStyle = '#FDB97D';
+    ctx.fillRect(x + 3, y + (S * 0.41 | 0), S - 6, S * 0.40 | 0);
+  }
 }
 
 function drawBody(seg, idx) {
@@ -435,34 +420,41 @@ function drawFood(x, y) {
       ctx.textAlign = 'left';
     }
 
-  } else if (foodKind === 'mushroom') {
-    // Stem
-    ctx.fillStyle = '#FFDDBB';
-    ctx.fillRect(x + S * 0.27, y + S * 0.46 + bounce, S * 0.46, S * 0.48);
-    // Cap
-    ctx.fillStyle = '#EE1111';
+  } else if (foodKind === 'bread') {
+    // Pão desenhado em pixel art
+    const by = y + bounce;
+    // Base do pão
+    ctx.fillStyle = '#C8830A';
+    roundRect(x + 2, by + S * 0.35, S - 4, S * 0.55, 4); ctx.fill();
+    // Topo arredondado
+    ctx.fillStyle = '#E8A020';
+    roundRect(x + 3, by + S * 0.18, S - 6, S * 0.42, 8); ctx.fill();
+    // Brilho
+    ctx.fillStyle = 'rgba(255,220,120,0.55)';
+    roundRect(x + 6, by + S * 0.22, S * 0.35, S * 0.2, 4); ctx.fill();
+    // Linha de corte
+    ctx.strokeStyle = '#9A5500';
+    ctx.lineWidth = 1.5;
     ctx.beginPath();
-    ctx.arc(x + S / 2, y + S * 0.43 + bounce, S * 0.44, Math.PI, 0, false);
-    ctx.fill();
-    // Dots
-    ctx.fillStyle = 'white';
-    [[0.27, 0.27], [0.65, 0.26], [0.5, 0.42]].forEach(([dx, dy]) => {
-      ctx.beginPath();
-      ctx.arc(x + S * dx, y + S * dy + bounce, 3, 0, Math.PI * 2);
-      ctx.fill();
-    });
+    ctx.moveTo(x + 4, by + S * 0.62);
+    ctx.lineTo(x + S - 4, by + S * 0.62);
+    ctx.stroke();
 
   } else {
     // Star
-    ctx.save();
-    ctx.translate(x + S / 2, y + S / 2 + bounce);
-    ctx.rotate(frame * 0.04);
-    ctx.fillStyle = '#FFD700'; star5(S * 0.46, S * 0.19);
-    ctx.fillStyle = '#FFEE88'; star5(S * 0.30, S * 0.12);
-    ctx.fillStyle = '#333';
-    ctx.fillRect(-5, -2, 3, 3);
-    ctx.fillRect( 2, -2, 3, 3);
-    ctx.restore();
+    if (imgStar.complete && imgStar.naturalWidth > 0) {
+      ctx.save();
+      ctx.translate(x + S / 2, y + S / 2 + bounce);
+      ctx.rotate(frame * 0.04);
+      ctx.drawImage(imgStar, -S / 2, -S / 2, S, S);
+      ctx.restore();
+    } else {
+      ctx.save();
+      ctx.translate(x + S / 2, y + S / 2 + bounce);
+      ctx.rotate(frame * 0.04);
+      ctx.fillStyle = '#FFD700'; star5(S * 0.46, S * 0.19);
+      ctx.restore();
+    }
   }
 }
 
@@ -569,7 +561,7 @@ function sfxEat(kind) {
   if (kind === 'coin') {
     beep(988, 'square', 0.06);
     setTimeout(() => beep(1319, 'square', 0.12), 60);
-  } else if (kind === 'mushroom') {
+  } else if (kind === 'bread') {
     beep(523, 'square', 0.06);
     setTimeout(() => beep(784, 'square', 0.12), 80);
   } else {
